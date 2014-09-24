@@ -59,7 +59,7 @@ function RenderL(conf) {
     }
 
 
-    var render = function() {
+    this.render = function() {
 
         var node;
         for (var i = 0; i < tree.length; i++) {
@@ -86,8 +86,6 @@ function RenderL(conf) {
 
     };
 
-    return {
-        render: render
-    }
+    return this;
 
 }
