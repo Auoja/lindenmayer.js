@@ -11,32 +11,24 @@ const POP = ']';
 
 function LSystem(conf) {
 
-    var tree = conf.seed;
-    var rules = conf.rules;
+    this.tree = conf.seed;
+    this.rules = conf.rules;
 
-    var iterate = function() {
-
+    this.iterate = function() {
         var newTree = '';
         var node;
 
-        for (var i = 0; i < tree.length; i++) {
-            node = tree.charAt(i);
-            newTree += rules[node] || node;
+        for (var i = 0; i < this.tree.length; i++) {
+            node = this.tree.charAt(i);
+            newTree += this.rules[node] || node;
         }
 
-        tree = newTree;
-        return tree;
+        this.tree = newTree;
+
+        return this.tree;
     };
 
-    var getTree = function() {
-        return tree;
-    }
-
-    return {
-        getTree: getTree,
-        iterate: iterate
-    };
-
+    return this;
 }
 
 function RenderL(conf) {
