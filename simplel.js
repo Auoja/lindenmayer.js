@@ -1,54 +1,30 @@
-function StringArray(s) {
-    this.str = [];
-    this.count = 0;
-    if (s) {
-        for (var i = 0; i < s.length; i++) {
-            this.str.push(s.charAt(i));
-            this.count++;
-        }
-    }
-    return this;
-}
-
-StringArray.prototype.append = function append(s) {
-    this.str = this.str.concat(s);
-    this.count += s.length;
-    return this;
-};
-
-StringArray.prototype.length = function length() {
-    return this.count;
-};
-
 function Pen(x, y, d) {
     this.x = x;
     this.y = y;
     this.angle = d;
 }
 
+const ANTICLOCK = '+';
+const CLOCKWISE = '-';
+const PUSH = '[';
+const POP = ']';
+
 function LSystem(conf) {
 
-    var tree = new StringArray(conf.seed);
+    var tree = conf.seed;
     var rules = conf.rules;
-
-    var keys = Object.keys(conf.rules);
-
-    for (var i = keys.length - 1; i >= 0; i--) {
-        rules[keys[i]] = new StringArray(conf.rules[keys[i]]);
-    }
 
     var iterate = function() {
 
-        var newTree = new StringArray();
-        var node = [];
-        for (var i = 0; i < tree.length(); i++) {
-            node = tree.str[i];
-            var rule = rules[node];
-            newTree.append(rule != null ? rule.str : [node]);
+        var newTree = '';
+        var node;
+
+        for (var i = 0; i < tree.length; i++) {
+            node = tree.charAt(i);
+            newTree += rules[node] || node;
         }
 
         tree = newTree;
-
         return tree;
     };
 
@@ -70,10 +46,6 @@ function RenderL(conf) {
     var context = conf.context;
 
     var penStates = [];
-
-    var x = 0;
-    var y = 250;
-    var angle = 0;
 
     var pen = new Pen(0, 250, 0);
 
@@ -98,21 +70,26 @@ function RenderL(conf) {
     var render = function() {
 
         var node;
-        for (var i = 0; i < tree.length(); i++) {
-            node = tree.str[i];
+        for (var i = 0; i < tree.length; i++) {
+            node = tree.charAt(i);
 
-            if (node === 'F') {
-                drawForward(8);
-            } else if (node === '+') {
-                pen.angle += 0.392699082;
-            } else if (node === '-') {
-                pen.angle -= 0.392699082;
-            } else if (node === '[') {
-                penStates.push(new Pen(pen.x, pen.y, pen.angle));
-            } else if (node === ']') {
-                pen = penStates.pop();
+            switch (node) {
+                case ANTICLOCK:
+                    pen.angle += 0.392699082;
+                    break;
+                case CLOCKWISE:
+                    pen.angle -= 0.392699082;
+                    break;
+                case PUSH:
+                    penStates.push(new Pen(pen.x, pen.y, pen.angle));
+                    break;
+                case POP:
+                    pen = penStates.pop();
+                    break;
+                default:
+                    drawForward(8);
+                    break;
             }
-
         }
 
     };
