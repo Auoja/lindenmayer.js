@@ -8,7 +8,7 @@
                 var canvas = document.getElementById('canvas');
                 var context = canvas.getContext('2d');
 
-                var lsys = new LSystem({
+                var plant = new LSystem({
                     seed: 'X',
                     rules: {
                         'X': 'F-[[X]+X]+F[+FX]-X',
@@ -16,16 +16,39 @@
                     }
                 });
 
-                for ( var i = 0; i < 6; i++) {
-                    lsys.iterate();
-                }
-
-                var renl = new RenderL({
-                    tree: lsys.tree,
-                    context: context
+                var dragonCurve = new LSystem({
+                    seed: 'XY',
+                    rules: {
+                        'X': 'X+YF',
+                        'Y': 'FX-Y'
+                    }
                 });
 
-                renl.render();
+                for ( var i = 0; i < 6; i++) {
+                    plant.iterate();
+                }
+
+                for ( var i = 0; i < 8; i++) {
+                    dragonCurve.iterate();
+                }
+
+
+                var plantRenderer = new RenderL({
+                    tree: plant.tree,
+                    context: context,
+                    pen: new Pen(0, 250, 0),
+                    angle: 25
+                });
+
+                var dragonRenderer = new RenderL({
+                    tree: dragonCurve.tree,
+                    context: context,
+                    pen: new Pen(100, 450, 0),
+                    angle: 90
+                });
+
+                plantRenderer.render();
+                dragonRenderer.render();
 
             }
         </script>

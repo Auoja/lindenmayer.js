@@ -1,13 +1,16 @@
-function Pen(x, y, d) {
-    this.x = x;
-    this.y = y;
-    this.angle = d;
-}
-
 const ANTICLOCK = '+';
 const CLOCKWISE = '-';
 const PUSH = '[';
 const POP = ']';
+const RAD = Math.PI / 180;
+
+
+function Pen(x, y, d, c) {
+    this.x = x;
+    this.y = y;
+    this.angle = d;
+    this.color = c || 'rgb(0,0,0)';
+}
 
 function LSystem(conf) {
 
@@ -39,23 +42,22 @@ function RenderL(conf) {
 
     var penStates = [];
 
-    var pen = new Pen(0, 250, 0);
+    var pen = conf.pen;
 
     function drawForward(dist) {
-
         var lastX = pen.x;
         var lastY = pen.y;
 
-        var rad = pen.angle;
+        var rad = pen.angle * RAD;
         pen.x += dist * Math.cos(rad);
         pen.y += dist * Math.sin(rad);
 
         context.beginPath();
         context.moveTo(lastX, lastY);
         context.lineTo(pen.x, pen.y);
+        context.strokeStyle = pen.color;
         context.closePath();
         context.stroke();
-
     }
 
 
@@ -67,13 +69,13 @@ function RenderL(conf) {
 
             switch (node) {
                 case ANTICLOCK:
-                    pen.angle += 0.392699082;
+                    pen.angle += conf.angle;
                     break;
                 case CLOCKWISE:
-                    pen.angle -= 0.392699082;
+                    pen.angle -= conf.angle;
                     break;
                 case PUSH:
-                    penStates.push(new Pen(pen.x, pen.y, pen.angle));
+                    penStates.push(new Pen(pen.x, pen.y, pen.angle, pen.color));
                     break;
                 case POP:
                     pen = penStates.pop();
