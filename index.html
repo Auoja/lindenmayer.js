@@ -6,7 +6,6 @@
         <script>
             function setup() {
                 var canvas = document.getElementById('canvas');
-                var context = canvas.getContext('2d');
 
                 var plant = new LSystem({
                     seed: 'X',
@@ -24,26 +23,24 @@
                     }
                 });
 
-                for ( var i = 0; i < 6; i++) {
+                for ( var i = 0; i < 7; i++) {
                     plant.iterate();
                 }
 
-                for ( var i = 0; i < 8; i++) {
+                for ( var i = 0; i < 11; i++) {
                     dragonCurve.iterate();
                 }
 
 
                 var plantRenderer = new RenderL({
                     tree: plant.tree,
-                    context: context,
-                    pen: new Pen(0, 250, 0),
+                    canvas: canvas,
                     angle: 25
                 });
 
                 var dragonRenderer = new RenderL({
                     tree: dragonCurve.tree,
-                    context: context,
-                    pen: new Pen(100, 450, 0),
+                    canvas: canvas,
                     angle: 90
                 });
 
@@ -55,6 +52,6 @@
     </head>
 
     <body onload="setup()">
-        <canvas id="canvas" width="1280px" height="720px"></canvas>
+        <canvas id="canvas" width="1280px" height="720px" style="border: 1px solid black"></canvas>
     </body>
 </html>
