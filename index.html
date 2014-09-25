@@ -23,12 +23,23 @@
                     }
                 });
 
+                var kochCurve = new LSystem({
+                    seed: 'F',
+                    rules: {
+                        'F': 'F-F+F+F-F'
+                    }
+                });
+
                 for ( var i = 0; i < 8; i++) {
                     plant.iterate();
                 }
 
-                for ( var i = 0; i < 11; i++) {
+                for ( var i = 0; i < 12; i++) {
                     dragonCurve.iterate();
+                }
+
+                for ( var i = 0; i < 5; i++) {
+                    kochCurve.iterate();
                 }
 
                 var plantRenderer = new RenderL({
@@ -43,8 +54,15 @@
                     angle: 90
                 });
 
+                var kockRenderer = new RenderL({
+                    tree: kochCurve.tree,
+                    canvas: canvas,
+                    angle: 90
+                });
+
                 plantRenderer.render();
                 dragonRenderer.render();
+                kockRenderer.render();
 
             }
         </script>

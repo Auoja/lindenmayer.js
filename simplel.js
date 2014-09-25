@@ -54,6 +54,7 @@ function RenderL(conf) {
 
 
     this.render = function() {
+
         this.tree = this.tree.replace(/[^F\+\-\[\]]/g, '');
 
         var defaultDist = Math.max(this.width, this.height);
