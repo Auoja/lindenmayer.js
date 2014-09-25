@@ -5,7 +5,6 @@ const POP = ']';
 const DRAW = 'F';
 const RAD = Math.PI / 180;
 
-
 function Pen(x, y, d, c) {
     this.x = x;
     this.y = y;
@@ -55,6 +54,7 @@ function RenderL(conf) {
 
 
     this.render = function() {
+        this.tree = this.tree.replace(/[^F\+\-\[\]]/g, '');
 
         var defaultDist = Math.max(this.width, this.height);
 
