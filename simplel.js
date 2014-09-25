@@ -2,6 +2,7 @@ const ANTICLOCK = '+';
 const CLOCKWISE = '-';
 const PUSH = '[';
 const POP = ']';
+const DRAW = 'F';
 const RAD = Math.PI / 180;
 
 
@@ -13,13 +14,8 @@ function Pen(x, y, d, c) {
 }
 
 function LSystem(conf) {
-
     this.tree = conf.seed;
     this.rules = conf.rules;
-
-    // this.iterate = function() {
-
-    // };
 
     return this;
 }
@@ -47,10 +43,12 @@ function RenderL(conf) {
 
     this.width = this.canvas.width;
     this.height = this.canvas.height;
-    this.minX = 0;
-    this.minY = 0;
-    this.maxX = this.width;
-    this.maxY = this.height;
+    this.boundingBox = {
+        minX: 0,
+        minY: 0,
+        maxX: this.width,
+        maxY: this.height
+    };
     this.pen = new Pen(0, 0, 0);
 
     this.padding = 20;
@@ -58,24 +56,24 @@ function RenderL(conf) {
 
     this.render = function() {
 
-        var defaultDist = 10;
+        var defaultDist = Math.max(this.width, this.height);
 
         this.process(defaultDist, false);
 
-        var newDistX = ((this.width - this.padding * 2) / (this.maxX - this.minX)) * defaultDist;
-        var newDistY = ((this.height - this.padding * 2) / (this.maxY - this.minY)) * defaultDist;
+        var newDistX = ((this.width - this.padding * 2) / (this.boundingBox.maxX - this.boundingBox.minX)) * defaultDist;
+        var newDistY = ((this.height - this.padding * 2) / (this.boundingBox.maxY - this.boundingBox.minY)) * defaultDist;
 
         var newDist = newDistX < newDistY ? newDistX : newDistY;
 
-        this.minX *= (newDist / defaultDist);
-        this.maxX *= (newDist / defaultDist);
-        this.minY *= (newDist / defaultDist);
-        this.maxY *= (newDist / defaultDist);
+        this.boundingBox.minX *= (newDist / defaultDist);
+        this.boundingBox.maxX *= (newDist / defaultDist);
+        this.boundingBox.minY *= (newDist / defaultDist);
+        this.boundingBox.maxY *= (newDist / defaultDist);
 
-        var xoffset = (this.width / 2) - (((this.maxX - this.minX) / 2) + this.minX);
-        var yoffset = (this.height / 2) - (((this.maxY - this.minY) / 2) + this.minY);
+        var xoffset = (this.width / 2) - (((this.boundingBox.maxX - this.boundingBox.minX) / 2) + this.boundingBox.minX);
+        var yoffset = (this.height / 2) - (((this.boundingBox.maxY - this.boundingBox.minY) / 2) + this.boundingBox.minY);
 
-        this.pen = new Pen(xoffset, yoffset, 0, '#ff0000');
+        this.pen = new Pen(xoffset, yoffset, 0, this.pen.color);
 
         this.process(newDist, true);
     };
@@ -102,7 +100,7 @@ RenderL.prototype.process = function(dist, draw) {
             case POP:
                 this.pen = penStates.pop();
                 break;
-            default:
+            case DRAW:
                 this.drawForward(dist, draw);
                 break;
         }
@@ -110,6 +108,7 @@ RenderL.prototype.process = function(dist, draw) {
 };
 
 RenderL.prototype.drawForward = function(dist, draw) {
+
     var lastX = this.pen.x;
     var lastY = this.pen.y;
     var angle = this.pen.angle * RAD;
@@ -117,16 +116,16 @@ RenderL.prototype.drawForward = function(dist, draw) {
     this.pen.x += dist * Math.cos(angle);
     this.pen.y += dist * Math.sin(angle);
 
-    if (this.pen.x < this.minX) {
-        this.minX = this.pen.x;
-    } else if (this.pen.x > this.maxX) {
-        this.maxX = this.pen.x;
+    if (this.pen.x < this.boundingBox.minX) {
+        this.boundingBox.minX = this.pen.x;
+    } else if (this.pen.x > this.boundingBox.maxX) {
+        this.boundingBox.maxX = this.pen.x;
     }
 
-    if (this.pen.y < this.minY) {
-        this.minY = this.pen.y;
-    } else if (this.pen.y > this.maxY) {
-        this.maxY = this.pen.y;
+    if (this.pen.y < this.boundingBox.minY) {
+        this.boundingBox.minY = this.pen.y;
+    } else if (this.pen.y > this.boundingBox.maxY) {
+        this.boundingBox.maxY = this.pen.y;
     }
 
     if (draw) {
