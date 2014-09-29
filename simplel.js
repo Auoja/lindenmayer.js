@@ -49,7 +49,7 @@ function RenderL(conf) {
         maxX: this.width,
         maxY: this.height
     };
-    this.pen = new Pen(0, 0, 0);
+    this.pen = new Pen(0, 0, 0, conf.color);
     this.constants = [ DRAW ];
 
     this.padding = 20;

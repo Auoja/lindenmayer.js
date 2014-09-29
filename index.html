@@ -57,25 +57,29 @@
                 var plantRenderer = new RenderL({
                     system: plant,
                     canvas: canvas,
-                    angle: 25
+                    angle: 25,
+                    color: '#000000'
                 });
 
                 var dragonRenderer = new RenderL({
                     system: dragonCurve,
                     canvas: canvas,
-                    angle: 90
+                    angle: 90,
+                    color: '#00ff00'
                 });
 
                 var kockRenderer = new RenderL({
                     system: kochCurve,
                     canvas: canvas,
-                    angle: 90
+                    angle: 90,
+                    color: '#0000ff'
                 });
 
                 var sierpinskiRenderer = new RenderL({
                     system: sierpinskiTriangle,
                     canvas: canvas,
-                    angle: 60
+                    angle: 60,
+                    color: '#ff0000'
                 });
 
                 sierpinskiRenderer.addConstants(['A','B']);
