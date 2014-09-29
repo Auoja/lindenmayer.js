@@ -50,13 +50,14 @@ function RenderL(conf) {
         maxY: this.height
     };
     this.pen = new Pen(0, 0, 0);
+    this.constants = [ DRAW ];
 
     this.padding = 20;
 
-
     this.render = function() {
 
-        this.tree = this.tree.replace(/[^F\+\-\[\]]/g, '');
+        var re = new RegExp('[^' + this.constants.join('') + '\\+\\-\\[\\]]', 'g');
+        this.tree = this.tree.replace(re, '');
 
         var defaultDist = Math.max(this.width, this.height);
 
@@ -102,7 +103,7 @@ RenderL.prototype.process = function(dist, draw) {
             case POP:
                 this.pen = penStates.pop();
                 break;
-            case DRAW:
+            default:
                 this.drawForward(dist, draw);
                 break;
         }
