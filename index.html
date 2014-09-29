@@ -12,7 +12,9 @@
                     rules: {
                         'X': 'F-[[X]+X]+F[+FX]-X',
                         'F': 'FF'
-                    }
+                    },
+                    canvas: canvas,
+                    angle: 25
                 });
 
                 var dragonCurve = new LSystem({
@@ -20,14 +22,18 @@
                     rules: {
                         'X': 'X+YF',
                         'Y': 'FX-Y'
-                    }
+                    },
+                    canvas: canvas,
+                    angle: 90
                 });
 
                 var kochCurve = new LSystem({
                     seed: 'F',
                     rules: {
                         'F': 'F-F+F+F-FB'
-                    }
+                    },
+                    canvas: canvas,
+                    angle: 90
                 });
 
                 var sierpinskiTriangle = new LSystem({
@@ -35,7 +41,9 @@
                     rules: {
                         'A': 'B-A-B',
                         'B': 'A+B+A'
-                    }
+                    },
+                    canvas: canvas,
+                    angle: 60
                 });
 
                 for ( var i = 0; i < 8; i++) {
@@ -54,40 +62,12 @@
                     sierpinskiTriangle.iterate();
                 }
 
-                var plantRenderer = new RenderL({
-                    system: plant,
-                    canvas: canvas,
-                    angle: 25,
-                    color: '#000000'
-                });
+                sierpinskiTriangle.addConstants(['A','B']);
 
-                var dragonRenderer = new RenderL({
-                    system: dragonCurve,
-                    canvas: canvas,
-                    angle: 90,
-                    color: '#00ff00'
-                });
-
-                var kockRenderer = new RenderL({
-                    system: kochCurve,
-                    canvas: canvas,
-                    angle: 90,
-                    color: '#0000ff'
-                });
-
-                var sierpinskiRenderer = new RenderL({
-                    system: sierpinskiTriangle,
-                    canvas: canvas,
-                    angle: 60,
-                    color: '#ff0000'
-                });
-
-                sierpinskiRenderer.addConstants(['A','B']);
-
-                plantRenderer.render();
-                dragonRenderer.render();
-                kockRenderer.render();
-                sierpinskiRenderer.render();
+                plant.render();
+                dragonCurve.render();
+                kochCurve.render();
+                sierpinskiTriangle.render();
 
             }
         </script>

@@ -1,10 +1,9 @@
-const ANTICLOCK = '+';
-const CLOCKWISE = '-';
-const PUSH = '[';
-const POP = ']';
-const DRAW = 'F';
-
-const RAD = Math.PI / 180;
+var ANTICLOCK = '+';
+var CLOCKWISE = '-';
+var PUSH = '[';
+var POP = ']';
+var DRAW = 'F';
+var RAD = Math.PI / 180;
 
 function Pen(x, y, d, c) {
     this.x = x;
@@ -15,7 +14,24 @@ function Pen(x, y, d, c) {
 
 function LSystem(conf) {
     this.tree = conf.seed;
+    this.angle = conf.angle;
     this.rules = conf.rules;
+
+    this.canvas = conf.canvas;
+    this.context = conf.canvas.getContext('2d');
+
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
+    this.boundingBox = {
+        minX: 0,
+        minY: 0,
+        maxX: this.width,
+        maxY: this.height
+    };
+    this.pen = new Pen(0, 0, 0, conf.color);
+    this.constants = [DRAW];
+
+    this.padding = 20;
 
     return this;
 }
@@ -32,64 +48,13 @@ LSystem.prototype.iterate = function() {
     this.tree = newTree;
 
     return this.tree;
-}
+};
 
-function RenderL(conf) {
+LSystem.prototype.addConstants = function(c) {
+    this.constants = this.constants.concat(c);
+};
 
-    this.tree = conf.system.tree;
-    this.angle = conf.angle;
-    this.canvas = conf.canvas;
-    this.context = conf.canvas.getContext('2d');
-
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
-    this.boundingBox = {
-        minX: 0,
-        minY: 0,
-        maxX: this.width,
-        maxY: this.height
-    };
-    this.pen = new Pen(0, 0, 0, conf.color);
-    this.constants = [ DRAW ];
-
-    this.padding = 20;
-
-    this.addConstants = function(c) {
-        this.constants = this.constants.concat(c);
-    };
-
-    this.render = function() {
-
-        var re = new RegExp('[^' + this.constants.join('') + '\\+\\-\\[\\]]', 'g');
-        this.tree = this.tree.replace(re, '');
-
-        var defaultDist = Math.max(this.width, this.height);
-
-        this.process(defaultDist, false);
-
-        var newDistX = ((this.width - this.padding * 2) / (this.boundingBox.maxX - this.boundingBox.minX)) * defaultDist;
-        var newDistY = ((this.height - this.padding * 2) / (this.boundingBox.maxY - this.boundingBox.minY)) * defaultDist;
-
-        var newDist = newDistX < newDistY ? newDistX : newDistY;
-
-        this.boundingBox.minX *= (newDist / defaultDist);
-        this.boundingBox.maxX *= (newDist / defaultDist);
-        this.boundingBox.minY *= (newDist / defaultDist);
-        this.boundingBox.maxY *= (newDist / defaultDist);
-
-        var xoffset = (this.width / 2) - (((this.boundingBox.maxX - this.boundingBox.minX) / 2) + this.boundingBox.minX);
-        var yoffset = (this.height / 2) - (((this.boundingBox.maxY - this.boundingBox.minY) / 2) + this.boundingBox.minY);
-
-        this.pen = new Pen(xoffset, yoffset, 0, this.pen.color);
-
-        this.process(newDist, true);
-    };
-
-    return this;
-
-}
-
-RenderL.prototype.process = function(dist, draw) {
+LSystem.prototype.process = function(dist, draw) {
 
     var penStates = [];
 
@@ -108,13 +73,13 @@ RenderL.prototype.process = function(dist, draw) {
                 this.pen = penStates.pop();
                 break;
             default:
-                this.drawForward(dist, draw);
+                this.draw(dist, draw);
                 break;
         }
     }
 };
 
-RenderL.prototype.drawForward = function(dist, draw) {
+LSystem.prototype.draw = function(dist, draw) {
 
     var lastX = this.pen.x;
     var lastY = this.pen.y;
@@ -143,4 +108,31 @@ RenderL.prototype.drawForward = function(dist, draw) {
         this.context.closePath();
         this.context.stroke();
     }
+};
+
+LSystem.prototype.render = function() {
+
+    var re = new RegExp('[^' + this.constants.join('') + '\\+\\-\\[\\]]', 'g');
+    this.tree = this.tree.replace(re, '');
+
+    var defaultDist = Math.max(this.width, this.height);
+
+    this.process(defaultDist, false);
+
+    var newDistX = ((this.width - this.padding * 2) / (this.boundingBox.maxX - this.boundingBox.minX)) * defaultDist;
+    var newDistY = ((this.height - this.padding * 2) / (this.boundingBox.maxY - this.boundingBox.minY)) * defaultDist;
+
+    var newDist = newDistX < newDistY ? newDistX : newDistY;
+
+    this.boundingBox.minX *= (newDist / defaultDist);
+    this.boundingBox.maxX *= (newDist / defaultDist);
+    this.boundingBox.minY *= (newDist / defaultDist);
+    this.boundingBox.maxY *= (newDist / defaultDist);
+
+    var xoffset = (this.width / 2) - (((this.boundingBox.maxX - this.boundingBox.minX) / 2) + this.boundingBox.minX);
+    var yoffset = (this.height / 2) - (((this.boundingBox.maxY - this.boundingBox.minY) / 2) + this.boundingBox.minY);
+
+    this.pen = new Pen(xoffset, yoffset, 0, this.pen.color);
+
+    this.process(newDist, true);
 };
