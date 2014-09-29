@@ -1,8 +1,9 @@
-const ANTICLOCK = '+';
-const CLOCKWISE = '-';
-const PUSH = '[';
-const POP = ']';
-const DRAW = 'F';
+// const ANTICLOCK = '+';
+// const CLOCKWISE = '-';
+// const PUSH = '[';
+// const POP = ']';
+// const DRAW = 'F';
+
 const RAD = Math.PI / 180;
 
 function Pen(x, y, d, c) {
@@ -49,13 +50,25 @@ function RenderL(conf) {
         maxY: this.height
     };
     this.pen = new Pen(0, 0, 0);
+    this.penStates = [];
 
     this.padding = 20;
 
+    this.renderingRules = {
+        '+': this.ANTICLOCK,
+        '-': this.CLOCKWISE,
+        '[': this.PUSH,
+        ']': this.POP,
+        'F': this.DRAW
+    };
+
+    this.addRule = function(ch, rule) {
+        this.renderingRules[ch] = rule;
+    };
 
     this.render = function() {
 
-        this.tree = this.tree.replace(/[^F\+\-\[\]]/g, '');
+        // this.tree = this.tree.replace(/[^F\+\-\[\]]/g, '');
 
         var defaultDist = Math.max(this.width, this.height);
 
@@ -83,27 +96,32 @@ function RenderL(conf) {
 
 }
 
+RenderL.prototype.DRAW = function(dist, draw) {
+    this.drawForward(dist, draw)
+};
+
+RenderL.prototype.ANTICLOCK = function() {
+    this.pen.angle += this.angle;
+};
+
+RenderL.prototype.CLOCKWISE = function() {
+    this.pen.angle -= this.angle;
+};
+
+RenderL.prototype.PUSH = function() {
+    this.penStates.push(new Pen(this.pen.x, this.pen.y, this.pen.angle, this.pen.color));
+};
+
+RenderL.prototype.POP = function() {
+    this.pen = this.penStates.pop();
+};
+
 RenderL.prototype.process = function(dist, draw) {
-
-    var penStates = [];
-
+    var operation;
     for (var i = 0; i < this.tree.length; i++) {
-        switch (this.tree.charAt(i)) {
-            case ANTICLOCK:
-                this.pen.angle += this.angle;
-                break;
-            case CLOCKWISE:
-                this.pen.angle -= this.angle;
-                break;
-            case PUSH:
-                penStates.push(new Pen(this.pen.x, this.pen.y, this.pen.angle, this.pen.color));
-                break;
-            case POP:
-                this.pen = penStates.pop();
-                break;
-            case DRAW:
-                this.drawForward(dist, draw);
-                break;
+        operation = this.renderingRules[this.tree.charAt(i)];
+        if (operation) {
+            operation.apply(this, [dist, draw]);
         }
     }
 };

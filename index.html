@@ -26,7 +26,15 @@
                 var kochCurve = new LSystem({
                     seed: 'F',
                     rules: {
-                        'F': 'F-F+F+F-F'
+                        'F': 'F-F+F+F-FB'
+                    }
+                });
+
+                var sierpinskiTriangle = new LSystem({
+                    seed: 'A',
+                    rules: {
+                        'A': 'B-A-B',
+                        'B': 'A+B+A'
                     }
                 });
 
@@ -40,6 +48,10 @@
 
                 for ( var i = 0; i < 5; i++) {
                     kochCurve.iterate();
+                }
+
+                for ( var i = 0; i < 8; i++) {
+                    sierpinskiTriangle.iterate();
                 }
 
                 var plantRenderer = new RenderL({
@@ -60,9 +72,19 @@
                     angle: 90
                 });
 
+                var sierpinskiRenderer = new RenderL({
+                    tree: sierpinskiTriangle.tree,
+                    canvas: canvas,
+                    angle: 60
+                });
+
+                sierpinskiRenderer.addRule('A', sierpinskiRenderer.DRAW);
+                sierpinskiRenderer.addRule('B', sierpinskiRenderer.DRAW);
+
                 plantRenderer.render();
                 dragonRenderer.render();
                 kockRenderer.render();
+                sierpinskiRenderer.render();
 
             }
         </script>
