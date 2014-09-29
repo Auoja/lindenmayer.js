@@ -54,6 +54,10 @@ function RenderL(conf) {
 
     this.padding = 20;
 
+    this.addConstants = function(c) {
+        this.constants = this.constants.concat(c);
+    };
+
     this.render = function() {
 
         var re = new RegExp('[^' + this.constants.join('') + '\\+\\-\\[\\]]', 'g');
