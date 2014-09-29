@@ -7,7 +7,7 @@
             function setup() {
                 var canvas = document.getElementById('canvas');
 
-                var plant = new LSystem({
+                var plant = LSystem.createLSystem({
                     seed: 'X',
                     rules: {
                         'X': 'F-[[X]+X]+F[+FX]-X',
@@ -17,7 +17,7 @@
                     angle: 25
                 });
 
-                var dragonCurve = new LSystem({
+                var dragonCurve = LSystem.createLSystem({
                     seed: 'XY',
                     rules: {
                         'X': 'X+YF',
@@ -27,7 +27,7 @@
                     angle: 90
                 });
 
-                var kochCurve = new LSystem({
+                var kochCurve = LSystem.createLSystem({
                     seed: 'F',
                     rules: {
                         'F': 'F-F+F+F-FB'
@@ -36,14 +36,16 @@
                     angle: 90
                 });
 
-                var sierpinskiTriangle = new LSystem({
+                var sierpinskiTriangle = LSystem.createLSystem({
                     seed: 'A',
                     rules: {
                         'A': 'B-A-B',
                         'B': 'A+B+A'
                     },
+                    constants: ['A', 'B'],
                     canvas: canvas,
-                    angle: 60
+                    angle: 60,
+                    color: '#0000ff'
                 });
 
                 for ( var i = 0; i < 8; i++) {
@@ -61,8 +63,6 @@
                 for ( var i = 0; i < 8; i++) {
                     sierpinskiTriangle.iterate();
                 }
-
-                sierpinskiTriangle.addConstants(['A','B']);
 
                 plant.render();
                 dragonCurve.render();
