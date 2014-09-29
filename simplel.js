@@ -1,9 +1,3 @@
-// const ANTICLOCK = '+';
-// const CLOCKWISE = '-';
-// const PUSH = '[';
-// const POP = ']';
-// const DRAW = 'F';
-
 const RAD = Math.PI / 180;
 
 function Pen(x, y, d, c) {
@@ -36,7 +30,7 @@ LSystem.prototype.iterate = function() {
 
 function RenderL(conf) {
 
-    this.tree = conf.tree;
+    this.tree = conf.system.tree;
     this.angle = conf.angle;
     this.canvas = conf.canvas;
     this.context = conf.canvas.getContext('2d');
