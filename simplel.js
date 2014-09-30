@@ -103,14 +103,9 @@ var LSystem = (function() {
         };
 
         var calculateOffset = function(newDist, oldDist) {
-            boundingBox.minX *= (newDist / oldDist);
-            boundingBox.maxX *= (newDist / oldDist);
-            boundingBox.minY *= (newDist / oldDist);
-            boundingBox.maxY *= (newDist / oldDist);
-
             return {
-                x: (width / 2) - (((boundingBox.maxX - boundingBox.minX) / 2) + boundingBox.minX),
-                y: (height / 2) - (((boundingBox.maxY - boundingBox.minY) / 2) + boundingBox.minY)
+                x: -(boundingBox.minX * (newDist / oldDist)),
+                y: -(boundingBox.minY * (newDist / oldDist))
             };
         };
 
