@@ -15,27 +15,28 @@ var LSystem = (function() {
     }
 
     function LSystem(conf) {
-        var tree = conf.seed;
-        var angle = conf.angle;
-        var rules = conf.rules;
+        var _tree = conf.seed;
+        var _angle = conf.angle;
+        var _initialAngle = conf.initialAngle || 0;
+        var _rules = conf.rules;
 
-        var canvas = conf.canvas;
-        var context = conf.canvas.getContext('2d');
+        var _canvas = conf.canvas;
+        var _context = conf.canvas.getContext('2d');
 
-        var originX = conf.x || 0;
-        var originY = conf.y || 0;
-        var width = conf.width || canvas.width;
-        var height = conf.height || canvas.height;
+        var _originX = conf.x || 0;
+        var _originY = conf.y || 0;
+        var _width = conf.width || _canvas.width;
+        var _height = conf.height || _canvas.height;
 
-        var boundingBox = {
+        var _boundingBox = {
             minX: 0,
             minY: 0,
-            maxX: width,
-            maxY: height
+            maxX: _width,
+            maxY: _height
         };
 
-        var pen;
-        var constants = conf.constants || [DRAW];
+        var _pen;
+        var _constants = conf.constants || [DRAW];
 
         // Private
 
@@ -43,19 +44,19 @@ var LSystem = (function() {
 
             var penStack = [];
 
-            for (var i = 0; i < tree.length; i++) {
-                switch (tree.charAt(i)) {
+            for (var i = 0; i < _tree.length; i++) {
+                switch (_tree.charAt(i)) {
                     case ANTICLOCK:
-                        pen.angle += angle;
+                        _pen.angle += _angle;
                         break;
                     case CLOCKWISE:
-                        pen.angle -= angle;
+                        _pen.angle -= _angle;
                         break;
                     case PUSH:
-                        penStack.push(new Pen(pen.x, pen.y, pen.angle, pen.color));
+                        penStack.push(new Pen(_pen.x, _pen.y, _pen.angle, _pen.color));
                         break;
                     case POP:
-                        pen = penStack.pop();
+                        _pen = penStack.pop();
                         break;
                     default:
                         drawForward(dist, draw);
@@ -66,57 +67,62 @@ var LSystem = (function() {
 
         var drawForward = function(dist, draw) {
 
-            var lastX = pen.x;
-            var lastY = pen.y;
-            var angle = pen.angle * RAD;
+            var lastX = _pen.x;
+            var lastY = _pen.y;
+            var angle = _pen.angle * RAD;
 
-            pen.x += dist * Math.cos(angle);
-            pen.y += dist * Math.sin(angle);
+            _pen.x += dist * Math.cos(angle);
+            _pen.y += dist * Math.sin(angle);
 
             if (draw) {
-                context.beginPath();
-                context.moveTo(lastX, lastY);
-                context.lineTo(pen.x, pen.y);
-                context.strokeStyle = pen.color;
-                context.closePath();
-                context.stroke();
+                _context.beginPath();
+                _context.moveTo(lastX, lastY);
+                _context.lineTo(_pen.x, _pen.y);
+                _context.strokeStyle = _pen.color;
+                _context.closePath();
+                _context.stroke();
             } else {
-                if (pen.x < boundingBox.minX) {
-                    boundingBox.minX = pen.x;
-                } else if (pen.x > boundingBox.maxX) {
-                    boundingBox.maxX = pen.x;
+                if (_pen.x < _boundingBox.minX) {
+                    _boundingBox.minX = _pen.x;
+                } else if (_pen.x > _boundingBox.maxX) {
+                    _boundingBox.maxX = _pen.x;
                 }
 
-                if (pen.y < boundingBox.minY) {
-                    boundingBox.minY = pen.y;
-                } else if (pen.y > boundingBox.maxY) {
-                    boundingBox.maxY = pen.y;
+                if (_pen.y < _boundingBox.minY) {
+                    _boundingBox.minY = _pen.y;
+                } else if (_pen.y > _boundingBox.maxY) {
+                    _boundingBox.maxY = _pen.y;
                 }
             }
         };
 
         var calculateDistance = function(oldDistance) {
-            var newDistX = (width / (boundingBox.maxX - boundingBox.minX)) * oldDistance;
-            var newDistY = (height / (boundingBox.maxY - boundingBox.minY)) * oldDistance;
+            var newDistX = (_width / (_boundingBox.maxX - _boundingBox.minX)) * oldDistance;
+            var newDistY = (_height / (_boundingBox.maxY - _boundingBox.minY)) * oldDistance;
 
             return newDistX < newDistY ? newDistX : newDistY;
         };
 
         var calculateOffset = function(newDist, oldDist) {
+            _boundingBox.minX *= (newDist / oldDist);
+            _boundingBox.maxX *= (newDist / oldDist);
+            _boundingBox.minY *= (newDist / oldDist);
+            _boundingBox.maxY *= (newDist / oldDist);
+
             return {
-                x: -(boundingBox.minX * (newDist / oldDist)),
-                y: -(boundingBox.minY * (newDist / oldDist))
+                x: (_width / 2) - (((_boundingBox.maxX - _boundingBox.minX) / 2) + _boundingBox.minX),
+                y: (_height / 2) - (((_boundingBox.maxY - _boundingBox.minY) / 2) + _boundingBox.minY)
             };
         };
 
         // Public
 
         this.getTree = function() {
-            return tree;
+            return _tree;
         };
 
         this.addConstants = function(c) {
-            constants = constants.concat(c);
+            _constants = _constants.concat(c);
         };
 
         this.iterate = function(iterations) {
@@ -126,34 +132,32 @@ var LSystem = (function() {
 
             for (var i = 0; i < it; i++) {
                 var newTree = '';
-                for (var j = 0; j < tree.length; j++) {
-                    node = tree.charAt(j);
-                    newTree += rules[node] || node;
+                for (var j = 0; j < _tree.length; j++) {
+                    node = _tree.charAt(j);
+                    newTree += _rules[node] || node;
                 }
-                tree = newTree;
+                _tree = newTree;
             }
 
-            return tree;
+            return _tree;
         };
 
         this.render = function() {
             // Cleanup unused commands in tree
-            var reg = new RegExp('[^' + constants.join('') + '\\+\\-\\[\\]]', 'g')
-            tree = tree.replace(reg, '');
+            var reg = new RegExp('[^' + _constants.join('') + '\\+\\-\\[\\]]', 'g')
+            _tree = _tree.replace(reg, '');
 
             // First Pass
-            var defaultDist = Math.max(width, height);
-            pen = new Pen(0, 0, 0, conf.color);
+            var defaultDist = Math.max(_width, _height);
+            _pen = new Pen(0, 0, _initialAngle, conf.color);
             process(defaultDist, false);
 
             // Second Pass
             var newDist = calculateDistance(defaultDist);
             var offset = calculateOffset(newDist, defaultDist);
-            pen = new Pen(originX + offset.x, originY + offset.y, 0, conf.color);
+            _pen = new Pen(_originX + offset.x, _originY + offset.y, _initialAngle, conf.color);
             process(newDist, true);
         };
-
-        return this;
     }
 
     var createLSystem = function(conf) {
