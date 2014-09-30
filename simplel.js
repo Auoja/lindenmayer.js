@@ -22,8 +22,10 @@ var LSystem = (function() {
         var canvas = conf.canvas;
         var context = conf.canvas.getContext('2d');
 
-        var width = canvas.width;
-        var height = canvas.height;
+        var originX = conf.x || 0;
+        var originY = conf.y || 0;
+        var width = conf.width || canvas.width;
+        var height = conf.height || canvas.height;
 
         var boundingBox = {
             minX: 0,
@@ -34,9 +36,6 @@ var LSystem = (function() {
 
         var pen;
         var constants = conf.constants || [DRAW];
-
-
-        var padding = 20;
 
         // Private
 
@@ -97,8 +96,8 @@ var LSystem = (function() {
         };
 
         var calculateDistance = function(oldDistance) {
-            var newDistX = ((width - padding * 2) / (boundingBox.maxX - boundingBox.minX)) * oldDistance;
-            var newDistY = ((height - padding * 2) / (boundingBox.maxY - boundingBox.minY)) * oldDistance;
+            var newDistX = (width / (boundingBox.maxX - boundingBox.minX)) * oldDistance;
+            var newDistY = (height / (boundingBox.maxY - boundingBox.minY)) * oldDistance;
 
             return newDistX < newDistY ? newDistX : newDistY;
         };
@@ -155,7 +154,7 @@ var LSystem = (function() {
             // Second Pass
             var newDist = calculateDistance(defaultDist);
             var offset = calculateOffset(newDist, defaultDist);
-            pen = new Pen(offset.x, offset.y, 0, conf.color);
+            pen = new Pen(originX + offset.x, originY + offset.y, 0, conf.color);
             process(newDist, true);
         };
 

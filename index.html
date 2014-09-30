@@ -14,7 +14,11 @@
                         'F': 'FF'
                     },
                     canvas: canvas,
-                    angle: 25
+                    angle: 25,
+                    width: 512,
+                    height: 512,
+                    x: 500,
+                    y: 300
                 });
 
                 var dragonCurve = LSystem.createLSystem({
@@ -56,7 +60,7 @@
 
                 kochCurve.iterate(5);
 
-                sierpinskiTriangle.iterate(8);
+                sierpinskiTriangle.iterate(9);
 
                 plant.render();
                 dragonCurve.render();
