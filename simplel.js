@@ -15,16 +15,16 @@ var LSystem = (function() {
     }
 
     function LSystem(conf) {
+
         var _tree = conf.seed;
+
         var _angle = conf.angle;
-        var _initialAngle = conf.initialAngle || 0;
         var _rules = conf.rules;
+        var _constants = conf.constants || [DRAW];
 
         var _canvas = conf.canvas;
         var _context = conf.canvas.getContext('2d');
 
-        var _originX = conf.x || 0;
-        var _originY = conf.y || 0;
         var _width = conf.width || _canvas.width;
         var _height = conf.height || _canvas.height;
 
@@ -36,7 +36,10 @@ var LSystem = (function() {
         };
 
         var _pen;
-        var _constants = conf.constants || [DRAW];
+        var _originX = conf.x || 0;
+        var _originY = conf.y || 0;
+        var _initialAngle = conf.initialAngle || 0;
+        var _color = conf.color;
 
         // Private
 
@@ -144,18 +147,18 @@ var LSystem = (function() {
 
         this.render = function() {
             // Cleanup unused commands in tree
-            var reg = new RegExp('[^' + _constants.join('') + '\\+\\-\\[\\]]', 'g')
+            var reg = new RegExp('[^' + _constants.join('') + '\\+\\-\\[\\]]', 'g');
             _tree = _tree.replace(reg, '');
 
             // First Pass
             var defaultDist = Math.max(_width, _height);
-            _pen = new Pen(0, 0, _initialAngle, conf.color);
+            _pen = new Pen(0, 0, _initialAngle, _color);
             process(defaultDist, false);
 
             // Second Pass
             var newDist = calculateDistance(defaultDist);
             var offset = calculateOffset(newDist, defaultDist);
-            _pen = new Pen(_originX + offset.x, _originY + offset.y, _initialAngle, conf.color);
+            _pen = new Pen(_originX + offset.x, _originY + offset.y, _initialAngle, _color);
             process(newDist, true);
         };
     }
@@ -166,6 +169,6 @@ var LSystem = (function() {
 
     return {
         createLSystem: createLSystem
-    }
+    };
 
 })();
