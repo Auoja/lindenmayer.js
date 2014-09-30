@@ -32,7 +32,7 @@ var LSystem = (function() {
             maxY: height
         };
 
-        var pen = new Pen(0, 0, 0, conf.color);
+        var pen;
         var constants = conf.constants || [DRAW];
 
 
@@ -96,6 +96,25 @@ var LSystem = (function() {
             }
         };
 
+        var calculateDistance = function(oldDistance) {
+            var newDistX = ((width - padding * 2) / (boundingBox.maxX - boundingBox.minX)) * oldDistance;
+            var newDistY = ((height - padding * 2) / (boundingBox.maxY - boundingBox.minY)) * oldDistance;
+
+            return newDistX < newDistY ? newDistX : newDistY;
+        };
+
+        var calculateOffset = function(newDist, oldDist) {
+            boundingBox.minX *= (newDist / oldDist);
+            boundingBox.maxX *= (newDist / oldDist);
+            boundingBox.minY *= (newDist / oldDist);
+            boundingBox.maxY *= (newDist / oldDist);
+
+            return {
+                x: (width / 2) - (((boundingBox.maxX - boundingBox.minX) / 2) + boundingBox.minX),
+                y: (height / 2) - (((boundingBox.maxY - boundingBox.minY) / 2) + boundingBox.minY)
+            };
+        };
+
         // Public
 
         this.getTree = function() {
@@ -121,29 +140,19 @@ var LSystem = (function() {
         };
 
         this.render = function() {
+            // Cleanup unused commands in tree
+            var reg = new RegExp('[^' + constants.join('') + '\\+\\-\\[\\]]', 'g')
+            tree = tree.replace(reg, '');
 
-            var re = new RegExp('[^' + constants.join('') + '\\+\\-\\[\\]]', 'g');
-            tree = tree.replace(re, '');
-
+            // First Pass
             var defaultDist = Math.max(width, height);
-
+            pen = new Pen(0, 0, 0, conf.color);
             process(defaultDist, false);
 
-            var newDistX = ((width - padding * 2) / (boundingBox.maxX - boundingBox.minX)) * defaultDist;
-            var newDistY = ((height - padding * 2) / (boundingBox.maxY - boundingBox.minY)) * defaultDist;
-
-            var newDist = newDistX < newDistY ? newDistX : newDistY;
-
-            boundingBox.minX *= (newDist / defaultDist);
-            boundingBox.maxX *= (newDist / defaultDist);
-            boundingBox.minY *= (newDist / defaultDist);
-            boundingBox.maxY *= (newDist / defaultDist);
-
-            var xoffset = (width / 2) - (((boundingBox.maxX - boundingBox.minX) / 2) + boundingBox.minX);
-            var yoffset = (height / 2) - (((boundingBox.maxY - boundingBox.minY) / 2) + boundingBox.minY);
-
-            pen = new Pen(xoffset, yoffset, 0, pen.color);
-
+            // Second Pass
+            var newDist = calculateDistance(defaultDist);
+            var offset = calculateOffset(newDist, defaultDist);
+            pen = new Pen(offset.x, offset.y, 0, conf.color);
             process(newDist, true);
         };
 
