@@ -73,18 +73,6 @@ var LSystem = (function() {
             pen.x += dist * Math.cos(angle);
             pen.y += dist * Math.sin(angle);
 
-            if (pen.x < boundingBox.minX) {
-                boundingBox.minX = pen.x;
-            } else if (pen.x > boundingBox.maxX) {
-                boundingBox.maxX = pen.x;
-            }
-
-            if (pen.y < boundingBox.minY) {
-                boundingBox.minY = pen.y;
-            } else if (pen.y > boundingBox.maxY) {
-                boundingBox.maxY = pen.y;
-            }
-
             if (draw) {
                 context.beginPath();
                 context.moveTo(lastX, lastY);
@@ -92,6 +80,18 @@ var LSystem = (function() {
                 context.strokeStyle = pen.color;
                 context.closePath();
                 context.stroke();
+            } else {
+                if (pen.x < boundingBox.minX) {
+                    boundingBox.minX = pen.x;
+                } else if (pen.x > boundingBox.maxX) {
+                    boundingBox.maxX = pen.x;
+                }
+
+                if (pen.y < boundingBox.minY) {
+                    boundingBox.minY = pen.y;
+                } else if (pen.y > boundingBox.maxY) {
+                    boundingBox.maxY = pen.y;
+                }
             }
         };
 
