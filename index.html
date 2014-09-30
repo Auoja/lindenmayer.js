@@ -52,17 +52,11 @@
                     plant.iterate();
                 }
 
-                for ( var i = 0; i < 12; i++) {
-                    dragonCurve.iterate();
-                }
+                dragonCurve.iterate(12);
 
-                for ( var i = 0; i < 5; i++) {
-                    kochCurve.iterate();
-                }
+                kochCurve.iterate(5);
 
-                for ( var i = 0; i < 8; i++) {
-                    sierpinskiTriangle.iterate();
-                }
+                sierpinskiTriangle.iterate(8);
 
                 plant.render();
                 dragonCurve.render();

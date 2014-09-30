@@ -42,7 +42,7 @@ var LSystem = (function() {
 
         var process = function(dist, draw) {
 
-            var penStates = [];
+            var penStack = [];
 
             for (var i = 0; i < tree.length; i++) {
                 switch (tree.charAt(i)) {
@@ -53,10 +53,10 @@ var LSystem = (function() {
                         pen.angle -= angle;
                         break;
                     case PUSH:
-                        penStates.push(new Pen(pen.x, pen.y, pen.angle, pen.color));
+                        penStack.push(new Pen(pen.x, pen.y, pen.angle, pen.color));
                         break;
                     case POP:
-                        pen = penStates.pop();
+                        pen = penStack.pop();
                         break;
                     default:
                         drawForward(dist, draw);
@@ -125,16 +125,19 @@ var LSystem = (function() {
             constants = constants.concat(c);
         };
 
-        this.iterate = function() {
-            var newTree = '';
+        this.iterate = function(iterations) {
+
             var node;
+            var it = iterations || 1;
 
-            for (var i = 0; i < tree.length; i++) {
-                node = tree.charAt(i);
-                newTree += rules[node] || node;
+            for (var i = 0; i < it; i++) {
+                var newTree = '';
+                for (var j = 0; j < tree.length; j++) {
+                    node = tree.charAt(j);
+                    newTree += rules[node] || node;
+                }
+                tree = newTree;
             }
-
-            tree = newTree;
 
             return tree;
         };
