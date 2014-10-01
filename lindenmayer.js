@@ -1,4 +1,4 @@
-var LSystem = (function() {
+var Lindenmayer = (function() {
 
     var ANTICLOCK = '+';
     var CLOCKWISE = '-';

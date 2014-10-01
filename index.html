@@ -2,12 +2,12 @@
 <html>
     <head>
         <title>L-System</title>
-        <script src="simplel.js"></script>
+        <script src="lindenmayer.js"></script>
         <script>
             function setup() {
                 var canvas = document.getElementById('canvas');
 
-                var plant = LSystem.createLSystem({
+                var plant = Lindenmayer.createLSystem({
                     seed: 'X',
                     rules: {
                         'X': 'F-[[X]+X]+F[+FX]-X',
@@ -22,7 +22,7 @@
                     y: 0
                 });
 
-                var dragonCurve = LSystem.createLSystem({
+                var dragonCurve = Lindenmayer.createLSystem({
                     seed: 'XY',
                     rules: {
                         'X': 'X+YF',
@@ -32,7 +32,7 @@
                     angle: 90
                 });
 
-                var kochCurve = LSystem.createLSystem({
+                var kochCurve = Lindenmayer.createLSystem({
                     seed: 'F',
                     rules: {
                         'F': 'F-F+F+F-FB'
@@ -41,7 +41,7 @@
                     angle: 90
                 });
 
-                var sierpinskiTriangle = LSystem.createLSystem({
+                var sierpinskiTriangle = Lindenmayer.createLSystem({
                     seed: 'A',
                     rules: {
                         'A': 'B-A-B',
