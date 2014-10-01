@@ -2,6 +2,22 @@
 
 A simple L-System implementation in JavaScript.
 
+## Introduction
+
+An L-System is a way of generating self similar fractals using a set of simple commands and production rules. By replacing each symbol of the initial seed using these production rules it is possible construct very complex geometric structures after just a few iterations.
+
+### Rendering
+
+Rendering of the generated tree is done using [Turtle Graphics](http://en.wikipedia.org/wiki/Turtle_graphics). The commands supported are:
+
+| Command | Action
+| -       |:-
+| \+      | Anticlockwise rotation 
+| \-      | Clockwise rotation      
+| \[      | Push to stack (Save current position and angle) 
+| \]      | Pop from stack (Restore saved position and angle) 
+| F       | Draw forward
+
 
 ### Basic Usage
 
@@ -26,7 +42,7 @@ A simple L-System implementation in JavaScript.
     
 ```
 
-This will render an L-System that fills the canvas.
+This will render an L-System that fills the entire canvas. `X` is the starting seed of the system. The `rules` object lists the production rules used to expand the tree each iteration. `angle` is used when rendering and dictates the amount the rotation commands will alter the drawing direction.
 
 ### More Advanced Usage
 
@@ -58,4 +74,5 @@ This will render an L-System that fills the canvas.
     
 ```
 
-`F` is the default drawing command, by adding `constants` it is possible to use others as well, in this case `A` and `B`. `initialAngle` is the starting direction of the L-System. `x`, `y`, `width` and `height` should be self explanatory as well as `color`.
+`F` is the default drawing command. By adding `constants` it is possible to use others as well, in this case `A` and `B`. `initialAngle` is the starting direction of the L-System. `x`, `y`, `width` and `height` should be self explanatory as well as `color`.
+
