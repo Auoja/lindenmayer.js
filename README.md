@@ -1,6 +1,6 @@
 # lindenmayer.js
 
-A simple L-System implementation in JavaScript.
+A simple [L-System](http://en.wikipedia.org/wiki/L-system) implementation in JavaScript.
 
 ## Introduction
 
@@ -10,15 +10,15 @@ An L-System is a way of generating self similar fractals using a set of simple c
 
 Rendering of the generated tree is done using [Turtle Graphics](http://en.wikipedia.org/wiki/Turtle_graphics). The commands supported are:
 
-__\+__    Anticlockwise rotation
+__\+__    Anticlockwise rotation.
 
-__\-__    Clockwise rotation
+__\-__    Clockwise rotation.
 
-__\[__    Push to stack (Save current position and angle)
+__\[__    Push to stack (Save current position and angle).
 
-__\]__    Pop from stack (Restore saved position and angle)
+__\]__    Pop from stack (Restore saved position and angle).
 
-__F__    Draw forward
+__F__    Draw forward.
 
 
 ### Basic Usage
